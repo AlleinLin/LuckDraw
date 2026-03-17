@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.DrawPolicyMapper">
+
+    <resultMap id="policyMap" type="io.prizewheel.adapters.persistence.entity.DrawPolicyPO">
+        <id column="id" property="id"/>
+        <result column="policy_id" property="policyId"/>
+        <result column="policy_name" property="policyName"/>
+        <result column="draw_mode" property="drawMode"/>
+        <result column="grant_type" property="grantType"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.DrawPolicyPO">
+        INSERT INTO pw_draw_policy (policy_id, policy_name, draw_mode, grant_type)
+        VALUES (#{policyId}, #{policyName}, #{drawMode}, #{grantType})
+    </insert>
+
+    <select id="selectById" resultMap="policyMap">
+        SELECT * FROM pw_draw_policy WHERE policy_id = #{policyId}
+    </select>
+
+    <select id="selectByCampaignId" resultMap="policyMap">
+        SELECT p.* FROM pw_draw_policy p
+        INNER JOIN pw_campaign c ON c.policy_id = p.policy_id
+        WHERE c.campaign_id = #{campaignId}
+    </select>
+
+</mapper>

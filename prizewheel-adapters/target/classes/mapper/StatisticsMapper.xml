@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.StatisticsMapper">
+
+    <resultMap id="statisticsMap" type="io.prizewheel.adapters.persistence.entity.StatisticsPO">
+        <id column="id" property="id"/>
+        <result column="dimension_type" property="dimensionType"/>
+        <result column="dimension_value" property="dimensionValue"/>
+        <result column="campaign_id" property="campaignId"/>
+        <result column="prize_id" property="prizeId"/>
+        <result column="total_count" property="totalCount"/>
+        <result column="win_count" property="winCount"/>
+        <result column="grant_count" property="grantCount"/>
+        <result column="stat_date" property="statDate"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="findByDimension" resultMap="statisticsMap">
+        SELECT * FROM pw_statistics 
+        WHERE dimension_type = #{dimensionType} 
+          AND dimension_value = #{dimensionValue}
+          AND campaign_id = #{campaignId}
+          AND stat_date = #{statDate}
+    </select>
+
+    <select id="findByCampaignId" resultMap="statisticsMap">
+        SELECT * FROM pw_statistics 
+        WHERE dimension_type = 'CAMPAIGN' AND dimension_value = CAST(#{campaignId} AS CHAR)
+        ORDER BY stat_date DESC
+    </select>
+
+    <select id="findByUserId" resultMap="statisticsMap">
+        SELECT * FROM pw_statistics 
+        WHERE dimension_type = 'USER' AND dimension_value = #{userId}
+        ORDER BY stat_date DESC
+    </select>
+
+    <select id="findByPrizeId" resultMap="statisticsMap">
+        SELECT * FROM pw_statistics 
+        WHERE dimension_type = 'PRIZE' AND dimension_value = #{prizeId}
+        ORDER BY stat_date DESC
+    </select>
+
+    <select id="findHotCampaigns" resultMap="statisticsMap">
+        SELECT * FROM pw_statistics 
+        WHERE dimension_type = 'CAMPAIGN'
+        GROUP BY dimension_value
+        ORDER BY SUM(total_count) DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.StatisticsPO">
+        INSERT INTO pw_statistics (dimension_type, dimension_value, campaign_id, prize_id, 
+                                   total_count, win_count, grant_count, stat_date)
+        VALUES (#{dimensionType}, #{dimensionValue}, #{campaignId}, #{prizeId},
+                #{totalCount}, #{winCount}, #{grantCount}, #{statDate})
+    </insert>
+
+    <update id="update" parameterType="io.prizewheel.adapters.persistence.entity.StatisticsPO">
+        UPDATE pw_statistics SET
+            total_count = #{totalCount},
+            win_count = #{winCount},
+            grant_count = #{grantCount}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="incrementTotalCount">
+        INSERT INTO pw_statistics (dimension_type, dimension_value, campaign_id, total_count, stat_date)
+        VALUES (#{dimensionType}, #{dimensionValue}, #{campaignId}, 1, #{statDate})
+        ON DUPLICATE KEY UPDATE total_count = total_count + 1
+    </insert>
+
+    <insert id="incrementWinCount">
+        INSERT INTO pw_statistics (dimension_type, dimension_value, campaign_id, win_count, stat_date)
+        VALUES (#{dimensionType}, #{dimensionValue}, #{campaignId}, 1, #{statDate})
+        ON DUPLICATE KEY UPDATE win_count = win_count + 1
+    </insert>
+
+    <insert id="incrementGrantCount">
+        INSERT INTO pw_statistics (dimension_type, dimension_value, campaign_id, grant_count, stat_date)
+        VALUES (#{dimensionType}, #{dimensionValue}, #{campaignId}, 1, #{statDate})
+        ON DUPLICATE KEY UPDATE grant_count = grant_count + 1
+    </insert>
+
+</mapper>

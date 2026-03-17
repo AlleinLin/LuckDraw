@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.WinRecordMapper">
+
+    <resultMap id="winRecordMap" type="io.prizewheel.adapters.persistence.entity.WinRecordPO">
+        <id column="id" property="id"/>
+        <result column="record_id" property="recordId"/>
+        <result column="participant_id" property="participantId"/>
+        <result column="campaign_id" property="campaignId"/>
+        <result column="policy_id" property="policyId"/>
+        <result column="prize_id" property="prizeId"/>
+        <result column="prize_name" property="prizeName"/>
+        <result column="prize_type" property="prizeType"/>
+        <result column="prize_content" property="prizeContent"/>
+        <result column="status" property="status"/>
+        <result column="win_time" property="winTime"/>
+        <result column="grant_time" property="grantTime"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.WinRecordPO">
+        INSERT INTO pw_win_record (
+            record_id, participant_id, campaign_id, policy_id, prize_id, 
+            prize_name, prize_type, prize_content, status, win_time, grant_time
+        ) VALUES (
+            #{recordId}, #{participantId}, #{campaignId}, #{policyId}, #{prizeId},
+            #{prizeName}, #{prizeType}, #{prizeContent}, #{status}, #{winTime}, #{grantTime}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="winRecordMap">
+        SELECT * FROM pw_win_record WHERE record_id = #{recordId}
+    </select>
+
+    <select id="selectByParticipantId" resultMap="winRecordMap">
+        SELECT * FROM pw_win_record WHERE participant_id = #{participantId} ORDER BY win_time DESC
+    </select>
+
+    <select id="selectByCampaignId" resultMap="winRecordMap">
+        SELECT * FROM pw_win_record WHERE campaign_id = #{campaignId} ORDER BY win_time DESC
+    </select>
+
+    <select id="selectPendingRecords" resultMap="winRecordMap">
+        SELECT * FROM pw_win_record WHERE status = 1 ORDER BY win_time ASC LIMIT 100
+    </select>
+
+    <update id="updateStatus">
+        UPDATE pw_win_record SET status = #{status}, grant_time = NOW() WHERE record_id = #{recordId}
+    </update>
+
+    <select id="countByParticipantAndCampaign" resultType="int">
+        SELECT COUNT(*) FROM pw_win_record 
+        WHERE participant_id = #{participantId} AND campaign_id = #{campaignId}
+    </select>
+
+</mapper>

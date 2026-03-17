@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.RuleTreeMapper">
+
+    <resultMap id="RuleTreeMap" type="io.prizewheel.adapters.persistence.entity.RuleTreePO">
+        <id column="id" property="id"/>
+        <result column="tree_id" property="treeId"/>
+        <result column="tree_name" property="treeName"/>
+        <result column="tree_desc" property="treeDesc"/>
+        <result column="root_node_id" property="rootNodeId"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="RuleNodeMap" type="io.prizewheel.adapters.persistence.entity.RuleNodePO">
+        <id column="id" property="id"/>
+        <result column="node_id" property="nodeId"/>
+        <result column="tree_id" property="treeId"/>
+        <result column="node_key" property="nodeKey"/>
+        <result column="node_desc" property="nodeDesc"/>
+        <result column="node_type" property="nodeType"/>
+        <result column="node_value" property="nodeValue"/>
+        <result column="rule_limit_type" property="ruleLimitType"/>
+        <result column="rule_limit_value" property="ruleLimitValue"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="findByTreeId" resultMap="RuleTreeMap">
+        SELECT * FROM pw_rule_tree WHERE tree_id = #{treeId}
+    </select>
+
+    <select id="findByTreeName" resultMap="RuleTreeMap">
+        SELECT * FROM pw_rule_tree WHERE tree_name = #{treeName}
+    </select>
+
+    <select id="findNodesByTreeId" resultMap="RuleNodeMap">
+        SELECT * FROM pw_rule_node WHERE tree_id = #{treeId} ORDER BY node_id
+    </select>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.RuleTreePO">
+        INSERT INTO pw_rule_tree (tree_id, tree_name, tree_desc, root_node_id, status, created_at, updated_at)
+        VALUES (#{treeId}, #{treeName}, #{treeDesc}, #{rootNodeId}, #{status}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="io.prizewheel.adapters.persistence.entity.RuleTreePO">
+        UPDATE pw_rule_tree 
+        SET tree_name = #{treeName}, tree_desc = #{treeDesc}, status = #{status}, updated_at = NOW()
+        WHERE tree_id = #{treeId}
+    </update>
+
+</mapper>

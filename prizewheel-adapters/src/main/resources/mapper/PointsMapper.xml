@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.PointsMapper">
+
+    <resultMap id="UserPointsMap" type="io.prizewheel.adapters.persistence.entity.UserPointsPO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="total_points" property="totalPoints"/>
+        <result column="used_points" property="usedPoints"/>
+        <result column="current_points" property="currentPoints"/>
+        <result column="user_level" property="userLevel"/>
+        <result column="last_sign_in_time" property="lastSignInTime"/>
+        <result column="continuous_sign_in_days" property="continuousSignInDays"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="PointsRecordMap" type="io.prizewheel.adapters.persistence.entity.PointsRecordPO">
+        <id column="id" property="id"/>
+        <result column="record_id" property="recordId"/>
+        <result column="user_id" property="userId"/>
+        <result column="points" property="points"/>
+        <result column="type" property="type"/>
+        <result column="source" property="source"/>
+        <result column="remark" property="remark"/>
+        <result column="related_id" property="relatedId"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="UserPointsMap">
+        SELECT * FROM pw_user_points WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.UserPointsPO">
+        INSERT INTO pw_user_points (user_id, total_points, used_points, current_points, user_level, 
+                                    last_sign_in_time, continuous_sign_in_days, created_at, updated_at)
+        VALUES (#{userId}, #{totalPoints}, #{usedPoints}, #{currentPoints}, #{userLevel},
+                #{lastSignInTime}, #{continuousSignInDays}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="io.prizewheel.adapters.persistence.entity.UserPointsPO">
+        UPDATE pw_user_points 
+        SET total_points = #{totalPoints}, 
+            used_points = #{usedPoints}, 
+            current_points = #{currentPoints}, 
+            user_level = #{userLevel},
+            last_sign_in_time = #{lastSignInTime},
+            continuous_sign_in_days = #{continuousSignInDays},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertRecord" parameterType="io.prizewheel.adapters.persistence.entity.PointsRecordPO">
+        INSERT INTO pw_points_record (record_id, user_id, points, type, source, remark, related_id, created_at)
+        VALUES (#{recordId}, #{userId}, #{points}, #{type}, #{source}, #{remark}, #{relatedId}, NOW())
+    </insert>
+
+    <select id="findRecordsByUserId" resultMap="PointsRecordMap">
+        SELECT * FROM pw_points_record 
+        WHERE user_id = #{userId} 
+        ORDER BY created_at DESC 
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countRecordsByUserId" resultType="int">
+        SELECT COUNT(*) FROM pw_points_record WHERE user_id = #{userId}
+    </select>
+
+</mapper>

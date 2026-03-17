@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.PolicyPrizeMapper">
+
+    <resultMap id="prizeMap" type="io.prizewheel.adapters.persistence.entity.PolicyPrizePO">
+        <id column="id" property="id"/>
+        <result column="policy_id" property="policyId"/>
+        <result column="prize_id" property="prizeId"/>
+        <result column="prize_name" property="prizeName"/>
+        <result column="total_quantity" property="totalQuantity"/>
+        <result column="remaining_quantity" property="remainingQuantity"/>
+        <result column="win_rate" property="winRate"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.PolicyPrizePO">
+        INSERT INTO pw_policy_prize (policy_id, prize_id, prize_name, total_quantity, remaining_quantity, win_rate)
+        VALUES (#{policyId}, #{prizeId}, #{prizeName}, #{totalQuantity}, #{remainingQuantity}, #{winRate})
+    </insert>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO pw_policy_prize (policy_id, prize_id, prize_name, total_quantity, remaining_quantity, win_rate)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.policyId}, #{item.prizeId}, #{item.prizeName}, #{item.totalQuantity}, #{item.remainingQuantity}, #{item.winRate})
+        </foreach>
+    </insert>
+
+    <select id="selectByPolicyId" resultMap="prizeMap">
+        SELECT * FROM pw_policy_prize WHERE policy_id = #{policyId} ORDER BY win_rate DESC
+    </select>
+
+    <update id="decreaseQuantity">
+        UPDATE pw_policy_prize SET remaining_quantity = remaining_quantity - 1
+        WHERE policy_id = #{policyId} AND prize_id = #{prizeId} AND remaining_quantity &gt; 0
+    </update>
+
+</mapper>

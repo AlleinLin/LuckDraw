@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.prizewheel.adapters.persistence.mapper.CampaignMapper">
+
+    <resultMap id="campaignMap" type="io.prizewheel.adapters.persistence.entity.CampaignPO">
+        <id column="id" property="id"/>
+        <result column="campaign_id" property="campaignId"/>
+        <result column="campaign_name" property="campaignName"/>
+        <result column="campaign_desc" property="campaignDesc"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="total_stock" property="totalStock"/>
+        <result column="remaining_stock" property="remainingStock"/>
+        <result column="max_participations" property="maxParticipations"/>
+        <result column="policy_id" property="policyId"/>
+        <result column="status" property="status"/>
+        <result column="creator" property="creator"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.CampaignPO">
+        INSERT INTO pw_campaign (
+            campaign_id, campaign_name, campaign_desc, start_time, end_time,
+            total_stock, remaining_stock, max_participations, policy_id, status, creator
+        ) VALUES (
+            #{campaignId}, #{campaignName}, #{campaignDesc}, #{startTime}, #{endTime},
+            #{totalStock}, #{remainingStock}, #{maxParticipations}, #{policyId}, #{status}, #{creator}
+        )
+    </insert>
+
+    <update id="update" parameterType="io.prizewheel.adapters.persistence.entity.CampaignPO">
+        UPDATE pw_campaign SET
+            campaign_name = #{campaignName},
+            campaign_desc = #{campaignDesc},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            total_stock = #{totalStock},
+            remaining_stock = #{remainingStock},
+            max_participations = #{maxParticipations},
+            policy_id = #{policyId},
+            status = #{status}
+        WHERE campaign_id = #{campaignId}
+    </update>
+
+    <select id="selectById" resultMap="campaignMap">
+        SELECT * FROM pw_campaign WHERE campaign_id = #{campaignId}
+    </select>
+
+    <select id="selectAll" resultMap="campaignMap">
+        SELECT * FROM pw_campaign ORDER BY created_at DESC
+    </select>
+
+    <select id="selectAvailable" resultMap="campaignMap">
+        SELECT * FROM pw_campaign 
+        WHERE status = 5 
+          AND start_time &lt;= NOW() 
+          AND end_time &gt;= NOW()
+          AND remaining_stock &gt; 0
+        ORDER BY created_at DESC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE pw_campaign SET status = #{status} WHERE campaign_id = #{campaignId}
+    </update>
+
+    <update id="decreaseStock">
+        UPDATE pw_campaign SET remaining_stock = remaining_stock - 1 
+        WHERE campaign_id = #{campaignId} AND remaining_stock &gt; 0
+    </update>
+
+    <update id="increaseStock">
+        UPDATE pw_campaign SET remaining_stock = remaining_stock + 1 WHERE campaign_id = #{campaignId}
+    </update>
+
+    <update id="updateStock">
+        UPDATE pw_campaign SET remaining_stock = #{stock} WHERE campaign_id = #{campaignId}
+    </update>
+
+    <select id="selectActiveCampaigns" resultMap="campaignMap">
+        SELECT * FROM pw_campaign 
+        WHERE status IN (4, 5, 6)
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectExpiredCampaigns" resultMap="campaignMap">
+        SELECT * FROM pw_campaign 
+        WHERE status = 7 AND end_time &lt; #{beforeTime}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="calculateRemainingStock" resultType="java.lang.Integer">
+        SELECT remaining_stock FROM pw_campaign WHERE campaign_id = #{campaignId}
+    </select>
+
+</mapper>
