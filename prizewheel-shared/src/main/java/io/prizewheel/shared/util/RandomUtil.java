@@ -18,10 +18,16 @@ public final class RandomUtil {
     private RandomUtil() {}
 
     public static int nextInt(int bound) {
+        if (bound <= 0) {
+            throw new IllegalArgumentException("bound must be positive, got: " + bound);
+        }
         return ThreadLocalRandom.current().nextInt(bound);
     }
 
     public static int nextSecureInt(int bound) {
+        if (bound <= 0) {
+            throw new IllegalArgumentException("bound must be positive, got: " + bound);
+        }
         return SECURE_RANDOM.nextInt(bound);
     }
 
@@ -39,10 +45,16 @@ public final class RandomUtil {
     }
 
     public static double nextDouble(double min, double max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("min must be less than max, got min: " + min + ", max: " + max);
+        }
         return min + (max - min) * ThreadLocalRandom.current().nextDouble();
     }
 
     public static long nextLong(long bound) {
+        if (bound <= 0) {
+            throw new IllegalArgumentException("bound must be positive, got: " + bound);
+        }
         return ThreadLocalRandom.current().nextLong(bound);
     }
 

@@ -8,26 +8,20 @@
         <result column="prize_type" property="prizeType"/>
         <result column="prize_name" property="prizeName"/>
         <result column="prize_content" property="prizeContent"/>
-        <result column="total_quantity" property="totalQuantity"/>
-        <result column="remaining_quantity" property="remainingQuantity"/>
-        <result column="win_rate" property="winRate"/>
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
     </resultMap>
 
     <insert id="insert" parameterType="io.prizewheel.adapters.persistence.entity.PrizePO">
-        INSERT INTO pw_prize (prize_id, prize_type, prize_name, prize_content, total_quantity, remaining_quantity, win_rate)
-        VALUES (#{prizeId}, #{prizeType}, #{prizeName}, #{prizeContent}, #{totalQuantity}, #{remainingQuantity}, #{winRate})
+        INSERT INTO pw_prize (prize_id, prize_type, prize_name, prize_content)
+        VALUES (#{prizeId}, #{prizeType}, #{prizeName}, #{prizeContent})
     </insert>
 
     <update id="update" parameterType="io.prizewheel.adapters.persistence.entity.PrizePO">
         UPDATE pw_prize SET
             prize_type = #{prizeType},
             prize_name = #{prizeName},
-            prize_content = #{prizeContent},
-            total_quantity = #{totalQuantity},
-            remaining_quantity = #{remainingQuantity},
-            win_rate = #{winRate}
+            prize_content = #{prizeContent}
         WHERE prize_id = #{prizeId}
     </update>
 
@@ -36,7 +30,7 @@
     </select>
 
     <select id="selectByCampaignId" resultMap="prizeMap">
-        SELECT p.* FROM pw_prize p
+        SELECT DISTINCT p.* FROM pw_prize p
         INNER JOIN pw_policy_prize pp ON p.prize_id = pp.prize_id
         INNER JOIN pw_draw_policy dp ON pp.policy_id = dp.policy_id
         INNER JOIN pw_campaign c ON c.policy_id = dp.policy_id
@@ -47,14 +41,5 @@
     <select id="selectAll" resultMap="prizeMap">
         SELECT * FROM pw_prize ORDER BY created_at DESC
     </select>
-
-    <update id="decreaseQuantity">
-        UPDATE pw_prize SET remaining_quantity = remaining_quantity - 1 
-        WHERE prize_id = #{prizeId} AND remaining_quantity &gt; 0
-    </update>
-
-    <update id="updateQuantity">
-        UPDATE pw_prize SET remaining_quantity = #{quantity} WHERE prize_id = #{prizeId}
-    </update>
 
 </mapper>

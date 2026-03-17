@@ -36,6 +36,15 @@ public enum PrizeType {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("无效的奖品类型码: " + code);
+    }
+
+    public static PrizeType fromCodeOrDefault(int code, PrizeType defaultValue) {
+        for (PrizeType type : values()) {
+            if (type.code == code) {
+                return type;
+            }
+        }
+        return defaultValue;
     }
 }

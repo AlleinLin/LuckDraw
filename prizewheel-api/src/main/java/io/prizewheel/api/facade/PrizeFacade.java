@@ -7,12 +7,14 @@ import io.prizewheel.core.port.input.PrizeServicePort;
 import io.prizewheel.shared.model.ApiResult;
 import org.apache.dubbo.config.annotation.DubboService;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * 奖品服务门面
+ * 
+ * 奖品基本信息存储在pw_prize表
+ * 奖品的数量和中奖率存储在pw_policy_prize表（与策略关联）
  * 
  * @author Allein
  * @since 2.0.0
@@ -75,11 +77,6 @@ public class PrizeFacade {
         prize.setPrizeType(request.getPrizeType());
         prize.setPrizeName(request.getPrizeName());
         prize.setPrizeContent(request.getPrizeContent());
-        prize.setTotalQuantity(request.getTotalQuantity());
-        prize.setRemainingQuantity(request.getRemainingQuantity() != null ? request.getRemainingQuantity() : request.getTotalQuantity());
-        if (request.getWinRate() != null) {
-            prize.setWinRate(new BigDecimal(request.getWinRate()));
-        }
         return prize;
     }
 
@@ -89,11 +86,6 @@ public class PrizeFacade {
         response.setPrizeType(prize.getPrizeType());
         response.setPrizeName(prize.getPrizeName());
         response.setPrizeContent(prize.getPrizeContent());
-        response.setTotalQuantity(prize.getTotalQuantity());
-        response.setRemainingQuantity(prize.getRemainingQuantity());
-        if (prize.getWinRate() != null) {
-            response.setWinRate(prize.getWinRate().toPlainString());
-        }
         response.setAvailable(prize.isAvailable());
         return response;
     }

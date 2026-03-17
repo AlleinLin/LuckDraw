@@ -1,5 +1,7 @@
 package io.prizewheel.shared.model;
 
+import io.prizewheel.shared.constant.SystemConst;
+
 import java.io.Serializable;
 
 /**
@@ -30,27 +32,31 @@ public class ApiResult<T> implements Serializable {
     }
 
     public static <T> ApiResult<T> success() {
-        return new ApiResult<>("0000", "操作成功");
+        return new ApiResult<>(SystemConst.SUCCESS_CODE, SystemConst.SUCCESS_MSG);
     }
 
     public static <T> ApiResult<T> success(T data) {
-        return new ApiResult<>("0000", "操作成功", data);
+        return new ApiResult<>(SystemConst.SUCCESS_CODE, SystemConst.SUCCESS_MSG, data);
     }
 
     public static <T> ApiResult<T> success(String message, T data) {
-        return new ApiResult<>("0000", message, data);
+        return new ApiResult<>(SystemConst.SUCCESS_CODE, message, data);
     }
 
     public static <T> ApiResult<T> fail(String message) {
-        return new ApiResult<>("0001", message);
+        return new ApiResult<>(SystemConst.ERROR_CODE, message);
     }
 
     public static <T> ApiResult<T> fail(String code, String message) {
         return new ApiResult<>(code, message);
     }
 
+    public static <T> ApiResult<T> unavailable() {
+        return new ApiResult<>(SystemConst.UNAVAILABLE_CODE, SystemConst.UNAVAILABLE_MSG);
+    }
+
     public boolean isSuccess() {
-        return "0000".equals(this.code);
+        return SystemConst.SUCCESS_CODE.equals(this.code);
     }
 
     public String getCode() {

@@ -24,6 +24,9 @@ public final class SystemConst {
     public static final String CACHE_PREFIX = "pw:";
     public static final String LOCK_PREFIX = "pw:lock:";
     public static final String STOCK_PREFIX = "pw:stock:";
+    public static final String USER_CACHE_PREFIX = "pw:user:";
+    public static final String CAMPAIGN_CACHE_PREFIX = "pw:campaign:";
+    public static final String PRIZE_CACHE_PREFIX = "pw:prize:";
 
     public static final int CACHE_EXPIRE_SECONDS = 3600;
     public static final int LOCK_EXPIRE_SECONDS = 30;

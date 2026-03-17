@@ -21,5 +21,7 @@ public interface PolicyPrizeMapper {
 
     List<PolicyPrizePO> selectByPolicyId(@Param("policyId") Long policyId);
 
+    PolicyPrizePO selectByPolicyAndPrize(@Param("policyId") Long policyId, @Param("prizeId") String prizeId);
+
     int decreaseQuantity(@Param("policyId") Long policyId, @Param("prizeId") String prizeId);
 }

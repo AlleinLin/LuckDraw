@@ -2,7 +2,6 @@ package io.prizewheel.core.port.output;
 
 import io.prizewheel.core.domain.entity.Campaign;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,7 +24,7 @@ public interface CampaignRepositoryPort {
 
     List<Campaign> findActiveCampaigns();
 
-    List<Campaign> findExpiredCampaigns(LocalDateTime beforeTime);
+    List<Campaign> findExpiredCampaigns();
 
     int updateStatus(Long campaignId, Integer status);
 

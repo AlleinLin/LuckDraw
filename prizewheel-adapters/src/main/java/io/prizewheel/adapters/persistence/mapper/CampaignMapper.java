@@ -4,7 +4,6 @@ import io.prizewheel.adapters.persistence.entity.CampaignPO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public interface CampaignMapper {
 
     List<CampaignPO> selectActiveCampaigns();
 
-    List<CampaignPO> selectExpiredCampaigns(@Param("beforeTime") LocalDateTime beforeTime);
+    List<CampaignPO> selectExpiredCampaigns();
 
     int updateStatus(@Param("campaignId") Long campaignId, @Param("status") Integer status);
 

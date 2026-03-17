@@ -8,8 +8,8 @@ package io.prizewheel.shared.constant;
  */
 public enum DrawMode {
 
-    SINGLE(1, "单次概率"),
-    TOTAL(2, "总体概率");
+    SINGLE_PROBABILITY(1, "单次抽奖独立概率模式"),
+    TOTAL_PROBABILITY(2, "总体概率分配模式");
 
     private final int code;
     private final String desc;
@@ -33,6 +33,15 @@ public enum DrawMode {
                 return mode;
             }
         }
-        return null;
+        throw new IllegalArgumentException("无效的抽奖模式码: " + code);
+    }
+
+    public static DrawMode fromCodeOrDefault(int code, DrawMode defaultValue) {
+        for (DrawMode mode : values()) {
+            if (mode.code == code) {
+                return mode;
+            }
+        }
+        return defaultValue;
     }
 }

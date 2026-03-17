@@ -29,6 +29,10 @@
         SELECT * FROM pw_policy_prize WHERE policy_id = #{policyId} ORDER BY win_rate DESC
     </select>
 
+    <select id="selectByPolicyAndPrize" resultMap="prizeMap">
+        SELECT * FROM pw_policy_prize WHERE policy_id = #{policyId} AND prize_id = #{prizeId}
+    </select>
+
     <update id="decreaseQuantity">
         UPDATE pw_policy_prize SET remaining_quantity = remaining_quantity - 1
         WHERE policy_id = #{policyId} AND prize_id = #{prizeId} AND remaining_quantity &gt; 0

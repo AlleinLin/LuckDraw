@@ -1,10 +1,12 @@
 package io.prizewheel.core.domain.entity;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * 奖品实体
+ * 
+ * 奖品基本信息存储在pw_prize表
+ * 数量和中奖率等策略配置存储在pw_policy_prize表
  * 
  * @author Allein
  * @since 1.0.0
@@ -17,18 +19,9 @@ public class Prize implements Serializable {
     private Integer prizeType;
     private String prizeName;
     private String prizeContent;
-    private Integer totalQuantity;
-    private Integer remainingQuantity;
-    private BigDecimal winRate;
 
     public boolean isAvailable() {
-        return remainingQuantity != null && remainingQuantity > 0;
-    }
-
-    public void decreaseQuantity() {
-        if (remainingQuantity > 0) {
-            remainingQuantity--;
-        }
+        return prizeId != null && !prizeId.isEmpty();
     }
 
     public String getPrizeId() {
@@ -61,29 +54,5 @@ public class Prize implements Serializable {
 
     public void setPrizeContent(String prizeContent) {
         this.prizeContent = prizeContent;
-    }
-
-    public Integer getTotalQuantity() {
-        return totalQuantity;
-    }
-
-    public void setTotalQuantity(Integer totalQuantity) {
-        this.totalQuantity = totalQuantity;
-    }
-
-    public Integer getRemainingQuantity() {
-        return remainingQuantity;
-    }
-
-    public void setRemainingQuantity(Integer remainingQuantity) {
-        this.remainingQuantity = remainingQuantity;
-    }
-
-    public BigDecimal getWinRate() {
-        return winRate;
-    }
-
-    public void setWinRate(BigDecimal winRate) {
-        this.winRate = winRate;
     }
 }

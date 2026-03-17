@@ -21,8 +21,4 @@ public interface PrizeRepositoryPort {
     List<Prize> findByCampaignId(Long campaignId);
 
     List<Prize> findAll();
-
-    int decreaseQuantity(String prizeId);
-
-    int updateQuantity(String prizeId, Integer quantity);
 }

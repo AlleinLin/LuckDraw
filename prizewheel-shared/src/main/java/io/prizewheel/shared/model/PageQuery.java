@@ -1,5 +1,7 @@
 package io.prizewheel.shared.model;
 
+import io.prizewheel.shared.constant.SystemConst;
+
 import java.io.Serializable;
 
 /**
@@ -13,13 +15,13 @@ public class PageQuery implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int pageNum = 1;
-    private int pageSize = 20;
+    private int pageSize = SystemConst.DEFAULT_PAGE_SIZE;
 
     public PageQuery() {}
 
     public PageQuery(int pageNum, int pageSize) {
         this.pageNum = Math.max(1, pageNum);
-        this.pageSize = Math.min(Math.max(1, pageSize), 100);
+        this.pageSize = Math.min(Math.max(1, pageSize), SystemConst.MAX_PAGE_SIZE);
     }
 
     public int getOffset() {
@@ -39,6 +41,6 @@ public class PageQuery implements Serializable {
     }
 
     public void setPageSize(int pageSize) {
-        this.pageSize = Math.min(Math.max(1, pageSize), 100);
+        this.pageSize = Math.min(Math.max(1, pageSize), SystemConst.MAX_PAGE_SIZE);
     }
 }

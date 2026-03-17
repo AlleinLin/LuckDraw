@@ -21,12 +21,24 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * 抽奖服务实现
  * 
+ * 核心流程：
+ * 1. 获取分布式锁防止并发
+ * 2. 校验活动状态和用户参与次数
+ * 3. 执行概率抽奖算法
+ * 4. 扣减奖品库存（乐观锁）
+ * 5. 扣减活动库存
+ * 6. 保存中奖记录
+ * 7. 发送发奖消息
+ * 
  * @author Allein
  * @since 1.0.0
  */
 public class DrawServiceImpl implements DrawServicePort {
 
     private static final Logger log = LoggerFactory.getLogger(DrawServiceImpl.class);
+    
+    private static final long LOCK_WAIT_SECONDS = 5;
+    private static final long LOCK_LEASE_SECONDS = 30;
 
     private final CampaignRepositoryPort campaignRepository;
     private final DrawPolicyRepositoryPort policyRepository;
@@ -54,7 +66,7 @@ public class DrawServiceImpl implements DrawServicePort {
         log.info("执行抽奖 participantId:{} campaignId:{}", participantId, campaignId);
 
         String lockKey = "draw:" + campaignId + ":" + participantId;
-        if (!cacheService.tryLock(lockKey, 30)) {
+        if (!cacheService.tryLock(lockKey, LOCK_WAIT_SECONDS, LOCK_LEASE_SECONDS)) {
             log.warn("获取抽奖锁失败 participantId:{} campaignId:{}", participantId, campaignId);
             return null;
         }
@@ -68,7 +80,8 @@ public class DrawServiceImpl implements DrawServicePort {
 
             int participatedCount = winRecordRepository.countByParticipantAndCampaign(participantId, campaignId);
             if (!campaign.canParticipate(participantId, participatedCount)) {
-                log.warn("用户参与次数已达上限 participantId:{} campaignId:{}", participantId, campaignId);
+                log.warn("用户参与次数已达上限 participantId:{} campaignId:{} participatedCount:{}", 
+                        participantId, campaignId, participatedCount);
                 return null;
             }
 
@@ -85,8 +98,19 @@ public class DrawServiceImpl implements DrawServicePort {
             }
 
             DrawPolicy.PrizeConfig prizeConfig = policy.getPrizeConfig(prizeId);
-            if (prizeConfig == null || prizeConfig.getRemainingQuantity() <= 0) {
+            if (prizeConfig == null) {
+                log.warn("奖品配置不存在 prizeId:{}", prizeId);
+                return createEmptyRecord(participantId, campaignId, policy.getPolicyId());
+            }
+
+            if (!policyRepository.checkPrizeAvailable(policy.getPolicyId(), prizeId)) {
                 log.info("奖品库存不足 prizeId:{}", prizeId);
+                return createEmptyRecord(participantId, campaignId, policy.getPolicyId());
+            }
+
+            int decreaseResult = policyRepository.decreasePrizeQuantity(policy.getPolicyId(), prizeId);
+            if (decreaseResult <= 0) {
+                log.info("奖品库存扣减失败（并发冲突） prizeId:{}", prizeId);
                 return createEmptyRecord(participantId, campaignId, policy.getPolicyId());
             }
 
@@ -97,6 +121,8 @@ public class DrawServiceImpl implements DrawServicePort {
             record.setPolicyId(policy.getPolicyId());
             record.setPrizeId(prizeId);
             record.setPrizeName(prizeConfig.getPrizeName());
+            record.setPrizeType(getPrizeType(prizeId));
+            record.setPrizeContent(getPrizeContent(prizeId));
             record.setStatus(1);
             record.setWinTime(LocalDateTime.now());
 
@@ -105,7 +131,8 @@ public class DrawServiceImpl implements DrawServicePort {
 
             messageQueue.send("prize-grant-topic", record);
 
-            log.info("抽奖成功 participantId:{} prizeId:{}", participantId, prizeId);
+            log.info("抽奖成功 participantId:{} prizeId:{} prizeName:{}", 
+                    participantId, prizeId, prizeConfig.getPrizeName());
             return record;
 
         } finally {
@@ -128,7 +155,7 @@ public class DrawServiceImpl implements DrawServicePort {
         BigDecimal cumulative = BigDecimal.ZERO;
 
         for (DrawPolicy.PrizeConfig config : configs) {
-            if (config.getRemainingQuantity() <= 0) {
+            if (config.getRemainingQuantity() == null || config.getRemainingQuantity() <= 0) {
                 continue;
             }
             cumulative = cumulative.add(config.getWinRate());
@@ -150,5 +177,13 @@ public class DrawServiceImpl implements DrawServicePort {
         record.setWinTime(LocalDateTime.now());
         winRecordRepository.save(record);
         return record;
+    }
+
+    private Integer getPrizeType(String prizeId) {
+        return null;
+    }
+
+    private String getPrizeContent(String prizeId) {
+        return null;
     }
 }

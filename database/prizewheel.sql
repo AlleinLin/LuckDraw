@@ -227,7 +227,7 @@ CREATE TABLE `pw_statistics` (
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_dimension` (`dimension_type`, `dimension_value`),
+    UNIQUE KEY `uk_dimension_date` (`dimension_type`, `dimension_value`, `campaign_id`, `stat_date`),
     KEY `idx_campaign_id` (`campaign_id`),
     KEY `idx_stat_date` (`stat_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='统计表';

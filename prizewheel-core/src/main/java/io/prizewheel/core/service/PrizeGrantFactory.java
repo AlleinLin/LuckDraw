@@ -1,5 +1,6 @@
 package io.prizewheel.core.service;
 
+import io.prizewheel.core.domain.entity.PointsRecord;
 import io.prizewheel.core.domain.entity.WinRecord;
 import io.prizewheel.core.port.input.PointsServicePort;
 import org.slf4j.Logger;
@@ -19,8 +20,15 @@ public class PrizeGrantFactory {
     private static final Logger log = LoggerFactory.getLogger(PrizeGrantFactory.class);
 
     private final Map<Integer, PrizeGrantStrategy> strategies = new HashMap<>();
+    private final PointsServicePort pointsService;
 
     public PrizeGrantFactory() {
+        this.pointsService = null;
+        registerDefaultStrategies();
+    }
+
+    public PrizeGrantFactory(PointsServicePort pointsService) {
+        this.pointsService = pointsService;
         registerDefaultStrategies();
     }
 
@@ -28,7 +36,7 @@ public class PrizeGrantFactory {
         registerStrategy(1, new VirtualPrizeStrategy());
         registerStrategy(2, new CouponPrizeStrategy());
         registerStrategy(3, new PhysicalPrizeStrategy());
-        registerStrategy(4, new PointsPrizeStrategy());
+        registerStrategy(4, new PointsPrizeStrategy(pointsService));
         registerStrategy(5, new CashPrizeStrategy());
     }
 
@@ -86,26 +94,33 @@ public class PrizeGrantFactory {
 
     public static class PointsPrizeStrategy implements PrizeGrantStrategy {
 
-        private PointsServicePort pointsService;
+        private final PointsServicePort pointsService;
 
-        public void setPointsService(PointsServicePort pointsService) {
+        public PointsPrizeStrategy(PointsServicePort pointsService) {
             this.pointsService = pointsService;
         }
 
         @Override
         public boolean grant(WinRecord record) {
             log.info("发放积分奖品 recordId:{} prizeContent:{}", record.getRecordId(), record.getPrizeContent());
-            if (pointsService != null) {
-                try {
-                    int points = Integer.parseInt(record.getPrizeContent());
-                    return pointsService.addPoints(record.getParticipantId(), points, 
-                            String.valueOf(2), "抽奖获得", record.getRecordId());
-                } catch (NumberFormatException e) {
-                    log.error("积分数量解析失败 prizeContent:{}", record.getPrizeContent());
-                    return false;
-                }
+            if (pointsService == null) {
+                log.warn("PointsServicePort未注入，无法发放积分奖品 recordId:{}", record.getRecordId());
+                return false;
             }
-            return true;
+            try {
+                int points = Integer.parseInt(record.getPrizeContent());
+                boolean result = pointsService.addPoints(record.getParticipantId(), points, 
+                        String.valueOf(PointsRecord.SOURCE_DRAW_WIN), "抽奖获得", record.getRecordId());
+                if (result) {
+                    log.info("积分奖品发放成功 recordId:{} points:{}", record.getRecordId(), points);
+                } else {
+                    log.warn("积分奖品发放失败 recordId:{}", record.getRecordId());
+                }
+                return result;
+            } catch (NumberFormatException e) {
+                log.error("积分数量解析失败 prizeContent:{}", record.getPrizeContent(), e);
+                return false;
+            }
         }
     }
 

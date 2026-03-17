@@ -1,5 +1,7 @@
 package io.prizewheel.shared.constant;
 
+import io.prizewheel.shared.model.ApiResult;
+
 /**
  * 活动状态枚举
  * 
@@ -38,6 +40,15 @@ public enum ActivityStatus {
                 return status;
             }
         }
-        return null;
+        throw new IllegalArgumentException("无效的活动状态码: " + code);
+    }
+
+    public static ActivityStatus fromCodeOrDefault(int code, ActivityStatus defaultValue) {
+        for (ActivityStatus status : values()) {
+            if (status.code == code) {
+                return status;
+            }
+        }
+        return defaultValue;
     }
 }

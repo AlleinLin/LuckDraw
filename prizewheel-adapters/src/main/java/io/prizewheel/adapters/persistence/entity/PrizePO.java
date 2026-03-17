@@ -1,11 +1,13 @@
 package io.prizewheel.adapters.persistence.entity;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * 奖品持久化实体
+ * 
+ * 对应pw_prize表，存储奖品基本信息
+ * 奖品的数量和中奖率存储在pw_policy_prize表中
  * 
  * @author Allein
  * @since 2.0.0
@@ -19,9 +21,6 @@ public class PrizePO implements Serializable {
     private Integer prizeType;
     private String prizeName;
     private String prizeContent;
-    private Integer totalQuantity;
-    private Integer remainingQuantity;
-    private BigDecimal winRate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -63,30 +62,6 @@ public class PrizePO implements Serializable {
 
     public void setPrizeContent(String prizeContent) {
         this.prizeContent = prizeContent;
-    }
-
-    public Integer getTotalQuantity() {
-        return totalQuantity;
-    }
-
-    public void setTotalQuantity(Integer totalQuantity) {
-        this.totalQuantity = totalQuantity;
-    }
-
-    public Integer getRemainingQuantity() {
-        return remainingQuantity;
-    }
-
-    public void setRemainingQuantity(Integer remainingQuantity) {
-        this.remainingQuantity = remainingQuantity;
-    }
-
-    public BigDecimal getWinRate() {
-        return winRate;
-    }
-
-    public void setWinRate(BigDecimal winRate) {
-        this.winRate = winRate;
     }
 
     public LocalDateTime getCreatedAt() {

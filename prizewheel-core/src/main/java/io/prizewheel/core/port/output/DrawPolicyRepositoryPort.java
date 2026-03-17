@@ -15,4 +15,8 @@ public interface DrawPolicyRepositoryPort {
     DrawPolicy findById(Long policyId);
 
     DrawPolicy findByCampaignId(Long campaignId);
+
+    int decreasePrizeQuantity(Long policyId, String prizeId);
+
+    boolean checkPrizeAvailable(Long policyId, String prizeId);
 }

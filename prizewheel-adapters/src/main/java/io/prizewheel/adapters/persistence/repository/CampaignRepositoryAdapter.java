@@ -61,8 +61,8 @@ public class CampaignRepositoryAdapter implements CampaignRepositoryPort {
     }
 
     @Override
-    public List<Campaign> findExpiredCampaigns(LocalDateTime beforeTime) {
-        return campaignMapper.selectExpiredCampaigns(beforeTime).stream()
+    public List<Campaign> findExpiredCampaigns() {
+        return campaignMapper.selectExpiredCampaigns().stream()
                 .map(this::toEntity)
                 .collect(Collectors.toList());
     }

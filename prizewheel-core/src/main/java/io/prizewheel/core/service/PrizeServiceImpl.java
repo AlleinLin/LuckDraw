@@ -2,6 +2,7 @@ package io.prizewheel.core.service;
 
 import io.prizewheel.core.domain.entity.Prize;
 import io.prizewheel.core.domain.entity.WinRecord;
+import io.prizewheel.core.port.input.PointsServicePort;
 import io.prizewheel.core.port.input.PrizeServicePort;
 import io.prizewheel.core.port.output.IdGeneratorPort;
 import io.prizewheel.core.port.output.PrizeRepositoryPort;
@@ -33,6 +34,16 @@ public class PrizeServiceImpl implements PrizeServicePort {
         this.winRecordRepository = winRecordRepository;
         this.idGenerator = idGenerator;
         this.grantFactory = new PrizeGrantFactory();
+    }
+
+    public PrizeServiceImpl(PrizeRepositoryPort prizeRepository,
+                            WinRecordRepositoryPort winRecordRepository,
+                            IdGeneratorPort idGenerator,
+                            PointsServicePort pointsService) {
+        this.prizeRepository = prizeRepository;
+        this.winRecordRepository = winRecordRepository;
+        this.idGenerator = idGenerator;
+        this.grantFactory = new PrizeGrantFactory(pointsService);
     }
 
     @Override

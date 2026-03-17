@@ -85,7 +85,7 @@
 
     <select id="selectExpiredCampaigns" resultMap="campaignMap">
         SELECT * FROM pw_campaign 
-        WHERE status = 7 AND end_time &lt; #{beforeTime}
+        WHERE status = 7 AND end_time &lt; NOW()
         ORDER BY created_at DESC
     </select>
 

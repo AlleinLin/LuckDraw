@@ -3,6 +3,8 @@ package io.prizewheel.core.port.output;
 /**
  * 缓存服务输出端口
  * 
+ * 提供缓存操作和分布式锁功能
+ * 
  * @author Allein
  * @since 1.0.0
  */
@@ -28,5 +30,11 @@ public interface CacheServicePort {
 
     boolean tryLock(String lockKey, long expireSeconds);
 
+    boolean tryLock(String lockKey, long waitTime, long leaseTime);
+
+    boolean tryLockWithWatchdog(String lockKey);
+
     void unlock(String lockKey);
+
+    boolean isLocked(String lockKey);
 }

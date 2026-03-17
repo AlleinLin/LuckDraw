@@ -24,8 +24,4 @@ public interface PrizeMapper {
     List<PrizePO> selectByCampaignId(@Param("campaignId") Long campaignId);
 
     List<PrizePO> selectAll();
-
-    int decreaseQuantity(@Param("prizeId") String prizeId);
-
-    int updateQuantity(@Param("prizeId") String prizeId, @Param("quantity") Integer quantity);
 }
