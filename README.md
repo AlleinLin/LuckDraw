@@ -2,10 +2,10 @@
 
 <div align="center">
 
-!\[Java]\(<https://img.shields.io/badge/Java-1.8+-orange.svg> null)
-!\[Spring Boot]\(<https://img.shields.io/badge/Spring%20Boot-2.6.0-brightgreen.svg> null)
-!\[Architecture]\(<https://img.shields.io/badge/Architecture-Hexagonal-blue.svg> null)
-!\[License]\(<https://img.shields.io/badge/License-Apache%202.0-green.svg> null)
+[![Java](https://img.shields.io/badge/Java-1.8+-orange.svg)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.6.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Architecture](https://img.shields.io/badge/Architecture-Hexagonal-blue.svg)](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 **基于六边形架构的抽奖解决方案**
 
