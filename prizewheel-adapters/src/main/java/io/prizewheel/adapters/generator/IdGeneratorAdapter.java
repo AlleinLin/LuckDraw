@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -85,7 +87,7 @@ public class IdGeneratorAdapter implements IdGeneratorPort {
             long id = ((0x000000FF & (long) mac[mac.length - 2]) | (0x0000FF00 & (((long) mac[mac.length - 1]) << 8))) >> 6;
             id = id % 32;
             return id;
-        } catch (Exception e) {
+        } catch (SocketException e) {
             log.warn("根据IP生成workerId失败，使用默认值", e);
             return 1L;
         }
@@ -117,7 +119,7 @@ public class IdGeneratorAdapter implements IdGeneratorPort {
             }
             
             return candidateAddress != null ? candidateAddress : InetAddress.getLocalHost();
-        } catch (Exception e) {
+        } catch (SocketException | UnknownHostException e) {
             log.warn("获取本地IP地址失败", e);
             return null;
         }
