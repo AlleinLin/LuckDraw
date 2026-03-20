@@ -150,7 +150,7 @@ boolean success = prizeService.grantPrize(recordId);
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-org/prizewheel.git
+git clone 
 
 # 2. 初始化数据库
 mysql -u root -p < database/prizewheel.sql
